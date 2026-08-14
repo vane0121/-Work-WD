@@ -1,44 +1,29 @@
-// SqeReceiving.cshtml
+// MaterialHold.cshtml
 
 
 
 
 @{
-    ViewBag.Title = "SQE Receiving";
+    ViewBag.Title = "Hold Materials";
 }
 
-
-@Html.Partial("_FilterReceiving")
 <div class="card border-0 shadow-sm">
     <div class="card-header border-bottom px-4 py-3">
-
     </div>
     <div class="card-body px-4 py-3">
 
         <div class="table-responsive">
-            <table id="SqeReceivingTable" class="table table-hover align-middle w-100">
+            <table id="MaterialHoldTable" class="table table-hover align-middle w-100">
                 <thead class="text-dark bg-light">
                     <tr>
                         <th>Part Number</th>
-                        <th>Pallet Id</th>
                         <th>Lot Id</th>
                         <th>Lot Number</th>
-                        <th>PO Number</th>
-                        <th>Invoice Number</th>
                         <th>Workflow</th>
                         <th>Quantity</th>
-                        <th>Expiration Date</th>
-                        <th>Received Date</th>
-                        <th class="d-none">Waybill Number</th>
-                        <th class="d-none">PO Line Number</th>
-                        <th class="d-none">Workflow Step</th>
-                        <th class="d-none">Vendor</th>
-                        <th class="d-none">Owner Name</th>
-                        <th class="d-none">Factory Name</th>
-                        <th class="d-none">UOM</th>
-                        <th class="d-none">Remarks</th>
-                        <th class="d-none">Parent Lot Id</th>
-                        <th class="d-none">Received By</th>
+                        <th>Hold Reason</th>
+                        <th>Hold Comments</th>
+                        <th>Hold Owner</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -49,7 +34,7 @@
 </div>
 
 <div class="modal fade" id="PassedModal" aria-modal="true" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-md">
         <div class="modal-content border-0 shadow-sm">
             <div class="modal-header bg-dark border-bottom px-4 py-3">
                 <h5 class="modal-title text-light font-weight-semibold">Inspection Passed Details</h5>
@@ -59,56 +44,29 @@
             </div>
 
             <div class="modal-body px-4 py-3">
-                <input type="hidden" class="form-control" id="txtPassedPrevOperation"  />
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label for="txtPassedPalletId">Pallet ID:</label>
-                            <input type="text" class="form-control" id="txtPassedPalletId" readonly />
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label for="txtPassedLotId">Lot ID:</label>
-                            <input type="text" class="form-control" id="txtPassedLotId" readonly />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label for="txtPassedLotNumber">Lot Number:</label>
-                            <input type="text" class="form-control" id="txtPassedLotNumber" readonly />
-                        </div>
-                    </div>
-
-                </div>
-
-
-                <div class="row">
-
-
-                </div>
-
+                <input type="hidden" class="form-control" id="txtPassedPrevOperation" />
+                <input type="hidden" class="form-control" id="txtPassedCurOperation" />
                 <div class="form-group">
-                    <label for="txtPassedRemarks">Additional Remarks:</label>
+                    <label for="txtPassedLotId">Lot ID:</label>
+                    <input type="text" class="form-control" id="txtPassedLotId" readonly />
+                </div>
+                <div class="form-group">
+                    <label for="txtPassedLotNumber">Lot Number:</label>
+                    <input type="text" class="form-control" id="txtPassedLotNumber" readonly />
+                </div>
+                <div class="form-group">
+                    <label for="txtPassedRemarks">Additional Comments/Remarks:</label>
                     <textarea class="form-control" placeholder="optional" id="txtPassedRemarks"></textarea>
                 </div>
-                @*<div class="row">
-                <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input custom-control-input-primary" type="checkbox" id="cbxPassedByPallet">
-                    <label for="cbxPassedByPallet" class="custom-control-label">Pass all by Pallet ID?</label>
-                </div>
-
-        </div>*@
             </div>
             <div class="modal-footer border-top bg-light px-4 py-3 d-flex justify-content-end">
-
+                @*<div class="custom-control custom-checkbox">
+                    <input class="custom-control-input custom-control-input-primary" type="checkbox" id="cbxPassedByLot">
+                    <label for="cbxPassedByLot" class="custom-control-label">Pass all by Pallet ID?</label>
+                </div>*@
                 <div class="">
                     <button type="button" id="btn-proceed-passed" class="btn btn-success px-4">
-                        Pass
+                        Release
                     </button>
                     <button type="button" id="cancel-passed" class="btn btn-outline-secondary px-4">
                         Cancel
@@ -123,7 +81,7 @@
 </div>
 
 <div class="modal fade" id="HoldModal" aria-modal="true" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-md">
         <div class="modal-content border-0 shadow-sm">
             <div class="modal-header bg-dark border-bottom px-4 py-3">
                 <h5 class="modal-title text-light font-weight-semibold">Hold Details</h5>
@@ -133,74 +91,26 @@
             </div>
 
             <div class="modal-body px-4 py-3">
-                <div class="row">
-                    <input type="hidden" class="form-control" id="txtHoldPrevOperation" />
-                    <div class="col-lg-4">
-                        <div class="form-group">
-                            <label for="txtHoldPalletId">Pallet ID:</label>
-                            <input type="text" class="form-control" id="txtHoldPalletId" readonly />
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group">
-                            <label for="txtHoldLotId">Lot ID:</label>
-                            <input type="text" class="form-control" id="txtHoldLotId" readonly />
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="form-group">
-                            <label for="txtHoldLotNumber">Lot Number:</label>
-                            <input type="text" class="form-control" id="txtHoldLotNumber" readonly />
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="row">
-
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label for="cmbHoldReason">Hold Reason:</label>
-                            <select class="form-control" id="cmbHoldReason"></select>
-                            <text id="txtHoldReasonDesc"></text>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label for="cmbHoldOwnerEmail">Owner:</label>
-                            <select class="form-control select2 " id="cmbHoldOwnerEmail">
-                            </select>
-                            <p><span id="txtHoldOwnerId"></span> - <span id="txtHoldOwnerName"></span></p>
-
-                        </div>
-                    </div>
+                <input type="hidden" class="form-control" id="txtHoldPrevOperation" />
+                <div class="form-group">
+                    <label for="txtHoldLotId">Lot ID:</label>
+                    <input type="text" class="form-control" id="txtHoldLotId" readonly />
                 </div>
                 <div class="form-group">
-                    <label for="txtHoldComment">Comments:</label>
-                    <textarea class="form-control" placeholder="..." id="txtHoldComment"></textarea>
+                    <label for="txtHoldLotNumber">Lot Number:</label>
+                    <input type="text" class="form-control" id="txtHoldLotNumber" readonly />
                 </div>
-                <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input custom-control-input-primary" type="checkbox" id="cbxHoldByPallet">
-                    <label for="cbxHoldByPallet" class="custom-control-label">Hold all by Pallet?</label>
-                </div>
-                <div class="table-responsive">
 
-                    <table id="MaterialPerPalletTable" class="table table-bordered table-hover align-middle w-100 d-none">
-                        <thead>
-                            <tr>
-                                <th>Part Number</th>
-                                <th>Lot Number</th>
-                                <th>Lot Id</th>
-                                <th>Category</th>
-                                <th>Quantity</th>
-
-                            </tr>
-                        </thead>
-                        <tbody id="MaterialPerPalletTableBody"></tbody>
-                    </table>
+                <div class="form-group">
+                    <label for="txtHoldReason">Hold Reason:</label>
+                    <textarea class="form-control" placeholder="..." id="txtHoldReason"></textarea>
                 </div>
             </div>
             <div class="modal-footer border-top bg-light px-4 py-3 d-flex justify-content-end">
+                @*<div class="custom-control custom-checkbox">
+                    <input class="custom-control-input custom-control-input-primary" type="checkbox" id="cbxHoldByLot">
+                    <label for="cbxHoldByLot" class="custom-control-label">Hold all by Lot Number?</label>
+                </div>*@
                 <div>
                     <button type="button" id="btn-proceed-hold" class="btn btn-warning px-4">
                         Hold
@@ -226,7 +136,6 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-
 
             <div class="modal-body px-4 py-3">
                 <input type="hidden" class="form-control" id="txtScrapPrevOperation" />
@@ -262,8 +171,8 @@
 
 
                 <div class="form-group">
-                    <label for="txtScrapReason">Comments:</label>
-                    <textarea class="form-control" placeholder="..." id="txtScrapReason"></textarea>
+                    <label for="txtScrapComment">Comments:</label>
+                    <textarea class="form-control" placeholder="..." id="txtScrapComment"></textarea>
                 </div>
             </div>
             <div class="modal-footer border-top bg-light px-4 py-3 d-flex justify-content-end">
@@ -281,7 +190,7 @@
 </div>
 
 <div class="modal fade" id="RtvModal" aria-modal="true" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-md">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content border-0 shadow-sm">
             <div class="modal-header bg-dark border-bottom px-4 py-3">
                 <h5 class="modal-title text-light font-weight-semibold">RTV Details</h5>
@@ -328,12 +237,11 @@
 
     </div>
 </div>
-
 <div class="modal fade" id="LotSplitModal" aria-modal="true" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-md">
         <div class="modal-content border-0 shadow-sm">
             <div class="modal-header bg-dark border-bottom px-4 py-3">
-                <h5 class="modal-title text-light font-weight-semibold">Sampling Details</h5>
+                <h5 class="modal-title text-light font-weight-semibold">Lot Split</h5>
                 <button type="button" id="close-lotsplit" class="close text-dark" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -381,6 +289,8 @@
     </div>
 </div>
 
+
+
 <div class="modal fade" id="ReceivingModal" aria-modal="true" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-xl">
         <div class="modal-content border-0 shadow-sm">
@@ -406,6 +316,7 @@
                         <div class="form-group">
                             <label for="cmbWorkflow">Workflow:</label>
                             <select class="form-control select2" id="cmbWorkflow">
+                               
                             </select>
                         </div>
                     </div>
@@ -478,6 +389,7 @@
                         <div class="form-group">
                             <label for="cmbUom">UOM:</label>
                             <select class="form-control select2" id="cmbUom">
+                                
                             </select>
                         </div>
                     </div>
@@ -516,10 +428,9 @@
                     <textarea class="form-control" placeholder="optional" id="txtRemarks"></textarea>
                 </div>
 
-                <div class="d-flex justify-content-between" id="div-receivedDetails">
-                    <label for="txtRackLocation" class="float-right">Initial Rack Location: <span id="txtRackLocation" style="font-weight:normal"></span></label>
-                    <label for="txtReceivedBy">Received by: <span id="txtReceivedBy" style="font-weight:normal"></span></label>
-                    <label for="txtReceivedDate" class="float-right">Received Date: <span id="txtReceivedDate" style="font-weight:normal"></span></label>
+                <div class="" id="div-receivedDetails">
+                    <label for="txtReceivedBy">Received by: <span id="txtReceivedBy"> 7351921</span></label>
+                    <label for="txtReceivedDate" class="float-right">Received Date:<span id="txtReceivedDate"> 2025-10-07 08:45:33</span></label>
                 </div>
             </div>
             <div class="modal-footer border-top bg-light px-4 py-3 d-flex justify-content-end">
@@ -537,30 +448,28 @@
 @section Scripts {
     <script>
         const AppUrls = {
-            getSqeReceiving: '@Url.Action("GetSqeReceivingMaterials", "SqeReceiving", new { area = "WMS" })',
-            getUom: '@Url.Action("GetUomList", "SqeReceiving", new { area = "WMS" })',
-            getCategory: '@Url.Action("GetCategoryList", "SqeReceiving", new { area = "WMS" })',
-            lotSplit: '@Url.Action("PerformLotSplit", "SqeReceiving", new { area = "WMS" })',
-            lotRelease: '@Url.Action("ReleasedMaterial", "SqeReceiving", new { area = "WMS" })',
-            lotRtv: '@Url.Action("RtvMaterial", "SqeReceiving", new { area = "WMS" })',
-            lotHold: '@Url.Action("HoldMaterial", "SqeReceiving", new { area = "WMS" })',
-            lotScrap: '@Url.Action("ScrapMaterial", "SqeReceiving", new { area = "WMS" })',
-             getHoldCategory: '@Url.Action("GetHoldReasonList", "SqeReceiving", new { area = "WMS" })',
-            getUseremail: '@Url.Action("GetUserEmailList", "SqeReceiving", new { area = "WMS" })',
-            getDefectCode: '@Url.Action("GetDefectCodeList", "SqeReceiving", new { area = "WMS" })',
-        };
-         const currentUser = '@ViewBag.CurrentUser.EmployeeId';
+            getHoldMaterials: '@Url.Action("GetHoldMaterials", "MaterialHold", new { area = "WMS" })',
+            getUom: '@Url.Action("GetUomList", "MaterialHold", new { area = "WMS" })',
+            getCategory: '@Url.Action("GetCategoryList", "MaterialHold", new { area = "WMS" })',
+            lotSplit: '@Url.Action("PerformLotSplit", "MaterialHold", new { area = "WMS" })',
+            lotRelease: '@Url.Action("ReleasedMaterial", "MaterialHold", new { area = "WMS" })',
+            lotRtv: '@Url.Action("RtvMaterial", "MaterialHold", new { area = "WMS" })',
+            lotHold: '@Url.Action("HoldMaterial", "MaterialHold", new { area = "WMS" })',
+            lotScrap: '@Url.Action("ScrapMaterial", "MaterialHold", new { area = "WMS" })',
+            getHoldCategory: '@Url.Action("GetHoldReasonList", "MaterialHold", new { area = "WMS" })',
+            getDefectCode: '@Url.Action("GetDefectCodeList", "MaterialHold", new { area = "WMS" })',
 
+        };
+        const currentUser = '@ViewBag.CurrentUser.EmployeeId';
     </script>
 
-    <script src="~/Scripts/WMS/sqeReceiving.js"></script>
+    <script src="~/Scripts/WMS/materialHold.js"></script>
+  
 }
 
-
-// SqeReceivingController.cs
+// MaterialHoldController.cs
 using M2OSS.DTO.WMS;
 using M2OSS.Service.WMS.Interface;
-using M2OSS.Web.Helper;
 using M2OSS.Web.Helper.XmlConverter;
 using System;
 using System.Collections.Generic;
@@ -572,106 +481,102 @@ using System.Xml.Linq;
 
 namespace M2OSS.Web.Controllers.WMS
 {
-    public class SqeReceivingController : BaseController
+    public class MaterialHoldController : BaseController
     {
-        private readonly ISqeReceivingService _sqeReceivingService;
-        public SqeReceivingController(ISqeReceivingService sqeReceivingService)
+        private readonly IHoldMaterialService _holdMaterialService;
+        public MaterialHoldController(IHoldMaterialService holdMaterialService)
         {
-            _sqeReceivingService = sqeReceivingService;
+            _holdMaterialService = holdMaterialService;
         }
-        // GET: SqeReceiving
+        // GET: MaterialHold
         public ActionResult Index()
         {
-            SetPageHeader("SQE Receiving/Inspection");
-            return View("~/Views/WMS/SqeReceiving/SqeReceiving.cshtml");
+            SetPageHeader("Hold Materials");
+            return View("~/Views/WMS/MaterialHold/MaterialHold.cshtml");
         }
 
-        public async Task<JsonResult> GetSqeReceivingMaterials(MaterialDetailsDTO materialDto)
+        public async Task<JsonResult> GetHoldMaterials(MaterialDetailsDTO materialDto)
         {
-           
-            var materialList = await _sqeReceivingService.GetSqeReceivingMaterialLotsAsync(materialDto);
+            
+            var materialList = await _holdMaterialService.GetHoldMaterialLotsAsync(materialDto);
             return Json(materialList);
         }
 
-       
         public JsonResult GetUomList()
         {
-            var uoms = _sqeReceivingService.GetUomList();
+            var uoms = _holdMaterialService.GetUomList();
             return Json(uoms);
+        }
+        public JsonResult GetCategoryList()
+        {
+            var category = _holdMaterialService.GetCategoryList();
+            return Json(category);
         }
         public async Task<JsonResult> PerformLotSplit(MaterialDetailsDTO sourceMaterialDto, MaterialDetailsDTO newMaterialDto)
         {
-          
-            var lotSplit = await _sqeReceivingService.PerformSplitLotAsync(sourceMaterialDto, newMaterialDto);
+           
+            var lotSplit = await _holdMaterialService.PerformSplitLotAsync(sourceMaterialDto, newMaterialDto);
             return Json(lotSplit);
         }
 
         public async Task<JsonResult> ReleasedMaterial(MaterialDetailsDTO materialDto)
-         {
+        {
           
-            var released = await _sqeReceivingService.ReleasedLotAsync(materialDto);
+            var released = await _holdMaterialService.ReleasedLotAsync(materialDto);
             return Json(released);
         }
 
         public async Task<JsonResult> RtvMaterial(MaterialDetailsDTO materialDto)
         {
            
-            var rtv = await _sqeReceivingService.RtvLotAsync(materialDto);
+            var rtv = await _holdMaterialService.RtvLotAsync(materialDto);
             return Json(rtv);
         }
-     
-         public async Task<JsonResult> HoldMaterial(IEnumerable<MaterialDetailsDTO> materialDto)
+        public async Task<JsonResult> HoldMaterial(MaterialDetailsDTO materialDto)
         {
-            int count = 0;
-            foreach (var dto in materialDto)
-            {
-                
-                var hold = await _sqeReceivingService.HoldLotAsync(dto);
-                if (hold)
-                    count++;
-            }
-
-            return Json(count);
+           
+            var hold = await _holdMaterialService.HoldLotAsync(materialDto);
+            return Json(hold);
 
         }
-
-
         public async Task<JsonResult> ScrapMaterial(MaterialDetailsDTO materialDto)
         {
-          
-            var hold = await _sqeReceivingService.ScrapLotAsync(materialDto);
+            var hold = await _holdMaterialService.ScrapLotAsync(materialDto);
             return Json(hold);
-        }
-        public JsonResult GetCategoryList()
-        {
-            var category = _sqeReceivingService.GetCategoryList();
-            return Json(category);
         }
 
         public async Task<JsonResult> GetHoldReasonList()
         {
-            var holdCategory = await _sqeReceivingService.GetHoldCategoryList();
+            var holdCategory = await _holdMaterialService.GetHoldCategoryList();
             return Json(holdCategory);
-        }
-
-        public async Task<JsonResult> GetUserEmailList(string input)
-        {
-            var userDetails = await _sqeReceivingService.GetUserDetailsList(LdapHelper.EscapeLdapSearchFilter(input));
-            return Json(userDetails);
         }
 
         public async Task<JsonResult> GetDefectCodeList()
         {
-            var defectCode = await _sqeReceivingService.GetDefectCodeList();
+            var defectCode = await _holdMaterialService.GetDefectCodeList();
             return Json(defectCode);
         }
-
     }
 }
 
-// SqeReceivingService.cs
+// MaterialHold.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace M2OSS.Entities.WMS
+{
+    public class MaterialHold
+    {
+        public string LotId { get; set; }
+        
+    }
+}
+
+// MaterialHoldService.cs
 using AutoMapper;
-using M2OSS.DTO.Common;
 using M2OSS.DTO.WMS;
 using M2OSS.Entities.WMS;
 using M2OSS.Repository.Camstar.Interface;
@@ -686,29 +591,27 @@ using System.Threading.Tasks;
 
 namespace M2OSS.Service.WMS.Service
 {
-    public class SqeReceivingService: ISqeReceivingService
+    public class MaterialHoldService: IHoldMaterialService
     {
         private readonly IMapper _mapper;
         private readonly ICamstarTransactionRepository _camstarTransactionRepository;
         private readonly IWebConfigurationService _webConfigurationRepository;
-        private readonly ILdapService _ldapRepository;
         private readonly IXmlConverterService _xmlConverterRepository;
         // Resolves NPxxx ("no part number") dummy lots back to the description
         // and UOM the operator picked at receiving time. Camstar carries only
         // the generic "No material part number" text and no meaningful UOM on
         // those rows.
         private readonly IPhoMaterialRepository _materialRepository;
-        public SqeReceivingService(IMapper mapper, ICamstarTransactionRepository camstarTransactionRepository, IWebConfigurationService webConfigurationRepository, ILdapService ldapRepository, IXmlConverterService xmlConverterRepository, IPhoMaterialRepository materialRepository)
+        public MaterialHoldService(IMapper mapper, ICamstarTransactionRepository camstarTransactionRepository, IWebConfigurationService webConfigurationRepository, IXmlConverterService xmlConverterRepository, IPhoMaterialRepository materialRepository)
         {
             _mapper = mapper;
             _camstarTransactionRepository = camstarTransactionRepository;
             _webConfigurationRepository = webConfigurationRepository;
-            _ldapRepository = ldapRepository;
             _xmlConverterRepository = xmlConverterRepository;
             _materialRepository = materialRepository;
         }
 
-        public async Task<IEnumerable<MaterialDetailsDTO>> GetSqeReceivingMaterialLotsAsync(MaterialDetailsDTO materialDto)
+        public async Task<IEnumerable<MaterialDetailsDTO>> GetHoldMaterialLotsAsync(MaterialDetailsDTO materialDto)
         {
             var material = _mapper.Map<MaterialDetails>(materialDto);
             var filterXml = _xmlConverterRepository.MaterialFilterXml(material);
@@ -772,46 +675,52 @@ namespace M2OSS.Service.WMS.Service
         {
             return _webConfigurationRepository.GetCategoryList();
         }
+
         public async Task<bool> PerformSplitLotAsync(MaterialDetailsDTO sourceMaterialDto, MaterialDetailsDTO newMaterialDto)
         {
             var sourceMaterial = _mapper.Map<MaterialDetails>(sourceMaterialDto);
             var newMaterial = _mapper.Map<MaterialDetails>(newMaterialDto);
-            var splitXml = _xmlConverterRepository.SplitLotXml(sourceMaterial, newMaterial);
+            var splitLotXml = _xmlConverterRepository.SplitLotXml(sourceMaterial, newMaterial);
             var setParentXml = _xmlConverterRepository.SetParentLotAttributeXml(newMaterial);
 
-            
-            var lotSplit = await _camstarTransactionRepository.SplitLotAsync(sourceMaterial, newMaterial, splitXml);
+
+           
+            var lotSplit = await _camstarTransactionRepository.SplitLotAsync(sourceMaterial, newMaterial, splitLotXml);
             newMaterial.ParentLotId = sourceMaterial.LotId;
-            
+
             if (lotSplit.result)
-               await _camstarTransactionRepository.SetMaterialLotAttributeAsync(newMaterial, "PWH_0002", setParentXml);
-            
+                await _camstarTransactionRepository.SetMaterialLotAttributeAsync(newMaterial, "PWH_0003", setParentXml);
+
             return lotSplit.result;
         }
+
 
         public async Task<bool> ReleasedLotAsync(MaterialDetailsDTO materialDto)
         {
             var material = _mapper.Map<MaterialDetails>(materialDto);
-            var moveXml = _xmlConverterRepository.MaterialInventoryMoveXml(material);
+            var moveLotXml = _xmlConverterRepository.MaterialInventoryMoveToPreviousXml(material);
             var setDispositionXml = _xmlConverterRepository.SetDispositionAttributesXml(material);
+
             
-            var move = await _camstarTransactionRepository.MaterialInventoryMoveAsync(material, moveXml);
-            
+            var move = await _camstarTransactionRepository.MaterialInventoryMoveAsync(material, moveLotXml);
+
+
+            //update attribute to move from previous operation
             if (move)
                 await _camstarTransactionRepository.SetMaterialLotAttributeAsync(material, material.WorkflowStep, setDispositionXml);
-            
-            
+
+
             return move;
         }
 
         public async Task<bool> RtvLotAsync(MaterialDetailsDTO materialDto)
         {
             var material = _mapper.Map<MaterialDetails>(materialDto);
-            var moveXml = _xmlConverterRepository.MaterialInventoryMoveXml(material);
+            var moveLotXml = _xmlConverterRepository.MaterialInventoryMoveXml(material);
             var setDispositionXml = _xmlConverterRepository.SetDispositionAttributesXml(material);
 
             
-            var move = await _camstarTransactionRepository.MaterialInventoryMoveAsync(material, moveXml);
+            var move = await _camstarTransactionRepository.MaterialInventoryMoveAsync(material, moveLotXml);
 
             if (move)
                 await _camstarTransactionRepository.SetMaterialLotAttributeAsync(material, material.WorkflowStep, setDispositionXml);
@@ -823,14 +732,14 @@ namespace M2OSS.Service.WMS.Service
         public async Task<bool> HoldLotAsync(MaterialDetailsDTO materialDto)
         {
             var material = _mapper.Map<MaterialDetails>(materialDto);
-            var moveXml = _xmlConverterRepository.MaterialInventoryMoveXml(material);
-            var setDispositionXml = _xmlConverterRepository.SetDispositionAttributesXml(material);
+            var moveLotXml = _xmlConverterRepository.MaterialInventoryMoveXml(material);
+           
 
            
-            var move = await _camstarTransactionRepository.MaterialInventoryMoveAsync(material,moveXml);
+            var move = await _camstarTransactionRepository.MaterialInventoryMoveAsync(material, moveLotXml);
 
-            if (move)
-                await _camstarTransactionRepository.SetMaterialLotAttributeAsync(material, material.WorkflowStep, setDispositionXml);
+            //if (move)
+            //await _camstarTransactionService.SetMaterialLotAttributeAsync(material, material.WorkflowStep);
 
 
             return move;
@@ -838,28 +747,20 @@ namespace M2OSS.Service.WMS.Service
         public async Task<bool> ScrapLotAsync(MaterialDetailsDTO materialDto)
         {
             var material = _mapper.Map<MaterialDetails>(materialDto);
-            var moveXml = _xmlConverterRepository.MaterialInventoryMoveXml(material);
-            var setDispositionXml = _xmlConverterRepository.SetDispositionAttributesXml(material);
+            var moveLotXml = _xmlConverterRepository.MaterialInventoryMoveXml(material);
+            
+            var move = await _camstarTransactionRepository.MaterialInventoryMoveAsync(material, moveLotXml);
 
-           
-            var move = await _camstarTransactionRepository.MaterialInventoryMoveAsync(material,moveXml);
-
-            if (move)
-                await _camstarTransactionRepository.SetMaterialLotAttributeAsync(material, material.WorkflowStep, setDispositionXml);
+            //if (move)
+            //await _camstarTransactionService.SetMaterialLotAttributeAsync(material, material.WorkflowStep);
 
 
             return move;
         }
-
         public async Task<IEnumerable<HoldDTO>> GetHoldCategoryList()
         {
             var holdCategoryList = await _camstarTransactionRepository.GetHoldReasonAsync();
             return _mapper.Map<IEnumerable<HoldDTO>>(holdCategoryList);
-        }
-        public async Task<IEnumerable<UserDTO>> GetUserDetailsList(string input)
-        {
-            var userDetails = await _ldapRepository.GetEmployeeDetailsAsync(input);
-            return _mapper.Map<IEnumerable<UserDTO>>(userDetails);
         }
 
         public async Task<IEnumerable<DefectDTO>> GetDefectCodeList()
@@ -867,36 +768,6 @@ namespace M2OSS.Service.WMS.Service
             var defectCodeList = await _camstarTransactionRepository.GetDefectCodeAsync();
             return _mapper.Map<IEnumerable<DefectDTO>>(defectCodeList); ;
         }
-
-
     }
 }
 
-// ISqeReceivingService.cs
-using M2OSS.DTO.Common;
-using M2OSS.DTO.WMS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace M2OSS.Service.WMS.Interface
-{
-    public interface ISqeReceivingService
-    {
-        Task<IEnumerable<MaterialDetailsDTO>> GetSqeReceivingMaterialLotsAsync(MaterialDetailsDTO materialDto);
-        IEnumerable<string> GetUomList();
-        IEnumerable<string> GetCategoryList();
-        Task<bool> PerformSplitLotAsync(MaterialDetailsDTO sourceMaterial, MaterialDetailsDTO newMaterial);
-        Task<bool> ReleasedLotAsync(MaterialDetailsDTO materialDto);
-        Task<bool> RtvLotAsync(MaterialDetailsDTO materialDto);
-        Task<bool> HoldLotAsync(MaterialDetailsDTO materialDto);
-        Task<bool> ScrapLotAsync(MaterialDetailsDTO materialDto);
-        Task<IEnumerable<HoldDTO>> GetHoldCategoryList();
-        Task<IEnumerable<UserDTO>> GetUserDetailsList(string input);
-        Task<IEnumerable<DefectDTO>> GetDefectCodeList();
-
-    }
-}
